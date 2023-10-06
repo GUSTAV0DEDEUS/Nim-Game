@@ -4,8 +4,24 @@ import 'package:nim/model/nim.model.dart';
 class NimGameController {
   late NimGameModel _model;
 
-  NimGameController(int p, int pMax, int turno) {
+  NimGameController(int p, int pMax) {
+    int turno = partida(p, pMax);
     _model = NimGameModel(p, pMax, turno);
+  }
+  int partida(int p, int pMax) {
+    if (p % (pMax + 1) == 0 && pMax == 1) {
+      print('Computador Começa');
+      return 0;
+    } else if ((pMax + 1) == p) {
+      print('Computador Começa');
+      return 0;
+    } else if (p % (pMax + 1) == 0) {
+      print('Você Começa');
+      return 1;
+    } else {
+      print('Você começa');
+      return 1;
+    }
   }
 
   void iniciarJogo() {

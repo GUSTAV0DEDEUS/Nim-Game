@@ -1,20 +1,49 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
 
-class Welcome extends StatelessWidget {
+import 'package:flutter/material.dart';
+import 'package:nim/view/screens/gameSetup/game_setup.dart';
+
+class Welcome extends StatefulWidget {
   const Welcome({super.key});
+
+  @override
+  State<Welcome> createState() => _WelcomeState();
+}
+
+class _WelcomeState extends State<Welcome> {
+  @override
+  void initState() {
+    super.initState();
+    Timer(const Duration(seconds: 6), () {
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (context) => const GameSetup()),
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Color.fromRGBO(65, 57, 96, 1),
+        backgroundColor: const Color.fromRGBO(114, 41, 148, 1),
         body: Center(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Image.asset(
-                'assets/images/background.jpeg',
+                'assets/images/background.png',
                 height: 400,
               ),
-              Text("Seja bem vindo")
+              const SizedBox(height: 20),
+              const Text(
+                "Bem-vindo a Eldirc, onde começa sua jornada.",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontFamily: "Dogica Pixel",
+                  fontWeight: FontWeight.w700,
+                  fontSize: 24,
+                ),
+              )
             ],
           ),
         ));
