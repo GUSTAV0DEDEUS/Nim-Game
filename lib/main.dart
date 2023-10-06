@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:nim/view/screens/welcome/gameIntro/game_intro.dart';
-import 'package:nim/view/screens/welcome/nim.dart';
 
 void main() {
   runApp(const MyApp());

@@ -1,5 +1,6 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
+import 'package:nim/view/screens/welcome/welcome.dart';
 
 class GameIntroScreen extends StatefulWidget {
   const GameIntroScreen({super.key});
@@ -28,7 +29,7 @@ class _GameIntroScreenState extends State<GameIntroScreen> {
   @override
   void didUpdateWidget(GameIntroScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
-    
+
     if (widget != oldWidget) {
       setState(() {
         showNextButton = false;
@@ -51,30 +52,53 @@ class _GameIntroScreenState extends State<GameIntroScreen> {
           children: <Widget>[
             Image.asset(imageAssets[currentSegmentIndex], fit: BoxFit.cover),
             Positioned(
+              top: 20,
+              right: 20,
+              child: TextButton(
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const Welcome(),
+                  ),
+                ),
+                child: const Text(
+                  "Pular",
+                  style: TextStyle(
+                    fontFamily: 'Dogica Pixel',
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
               bottom: 20,
-              child: SizedBox(
-                height: 300,
-                width: width * .9,
-                child: Container(
-                  decoration: BoxDecoration(color: Colors.black54, borderRadius: BorderRadius.circular(5)),
+              child: LayoutBuilder(
+                builder: (context, constraints) => Container(
+                  width: width * .9,
+                  decoration: BoxDecoration(
+                      color: Colors.black54,
+                      borderRadius: BorderRadius.circular(5)),
                   padding: const EdgeInsets.all(24),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       AnimatedTextKit(
                         animatedTexts: [
-                          TypewriterAnimatedText(textSegments[currentSegmentIndex],
-                        textStyle: const TextStyle(fontSize: 14.0, color: Colors.white),
-                        speed: const Duration(milliseconds: 100),)
+                          TypewriterAnimatedText(
+                            textSegments[currentSegmentIndex],
+                            textStyle: const TextStyle(
+                                fontSize: 14.0, color: Colors.white),
+                            speed: const Duration(milliseconds: 100),
+                          )
                         ],
-                        key: ValueKey<int>(currentSegmentIndex), 
+                        key: ValueKey<int>(currentSegmentIndex),
                         repeatForever: false,
                         isRepeatingAnimation: false,
                         onFinished: () => {
                           setState(() {
                             showNextButton = true;
                           })
-                        },                        
+                        },
                       ),
                       if (showNextButton)
                         Row(
@@ -82,13 +106,16 @@ class _GameIntroScreenState extends State<GameIntroScreen> {
                           children: [
                             TextButton(
                               onPressed: () {
-                                if (currentSegmentIndex < textSegments.length - 1) {
+                                if (currentSegmentIndex <
+                                    textSegments.length - 1) {
                                   setState(() {
                                     showNextButton = false;
                                     currentSegmentIndex++;
                                   });
                                 } else {
-                                  print("Todos os segmentos de texto foram mostrados!");
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => const Welcome(),
+                                  ));
                                 }
                               },
                               child: const Text(
