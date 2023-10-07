@@ -1,53 +1,48 @@
-import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:nim/model/nim.model.dart';
 
 class NimGameController {
   late NimGameModel _model;
-
+  late int turno;
+  bool get isTurnComputer => turno == 0;
+  bool get isTurnUser => turno == 1;
+  int get valueP => _model.p;
   NimGameController(int p, int pMax) {
-    int turno = partida(p, pMax);
-    _model = NimGameModel(p, pMax, turno);
-  }
-  int partida(int p, int pMax) {
-    if (p % (pMax + 1) == 0 && pMax == 1) {
-      print('Computador Começa');
-      return 0;
-    } else if ((pMax + 1) == p) {
-      print('Computador Começa');
-      return 0;
-    } else if (p % (pMax + 1) == 0) {
-      print('Você Começa');
-      return 1;
-    } else {
-      print('Você começa');
-      return 1;
-    }
+    _model = NimGameModel(p, pMax);
   }
 
   void iniciarJogo() {
-    print('Seja bem-vindo ao NIM');
-    print('=' * 30);
+    _model.partida();
+    turno = _model.turno;
+  }
 
-    while (_model.p > 0) {
-      if (_model.turno == 1) {
-        int jogada = usuarioEscolheJogada(_model.p, _model.pMax);
-        _model.p -= jogada;
-        print('Você retirou $jogada peças.');
-      } else {
-        int jogada = computadorEscolheJogada(_model.p, _model.pMax);
-        _model.p -= jogada;
-        print('O computador retirou $jogada peças.');
-      }
-
-      print('Sobram ${_model.p} peças.');
-      _model.turno = _model.turno == 1 ? 0 : 1;
-    }
-
-    if (_model.turno == 1) {
-      print('Você Venceu!!!');
+  int winnerController() {
+    if (_model.p == 0) {
+      return _model.getWinner();
     } else {
-      print('O computador Venceu!!!');
+      throw ("Ainda tem pecas");
     }
+  }
+
+  void realizarJogada(int quantidade) {
+    if (_model.p <= 0) {
+      throw ('Jogo já acabou.');
+    }
+    if (turno == 0) {
+      jogadaComputador();
+    } else {
+      usuarioEscolheJogada(quantidade);
+    }
+  }
+
+  int jogadaComputador() {
+    if (isTurnComputer) {
+      int jogada = computadorEscolheJogada(_model.p, _model.pMax);
+      _model.p -= jogada;
+      print('O computador retirou $jogada peças.');
+      turno = 1;
+    }
+    return computadorEscolheJogada(_model.p, _model.pMax);
   }
 
   int computadorEscolheJogada(int p, int pMax) {
@@ -61,15 +56,24 @@ class NimGameController {
     return jogada;
   }
 
-  int usuarioEscolheJogada(int p, int pMax) {
-    int jogada = 0;
-    while (jogada <= 0 || jogada > pMax || jogada > p) {
-      stdout.write('Quantas peças você deseja retirar (1 a $pMax)? ');
-      jogada = int.tryParse(stdin.readLineSync() ?? '') ?? 0;
-      if (jogada <= 0 || jogada > pMax || jogada > p) {
-        print('Jogada inválida. Tente novamente.');
+  void usuarioEscolheJogada(int value) {
+    if (isTurnUser) {
+      int jogada = value;
+      if (jogada <= 0 || jogada > _model.pMax || jogada > _model.p) {
+        throw ('Jogada inválida. Tente novamente.');
       }
+      _model.p -= jogada;
+      print('O jogador retirou $jogada peças.');
+      turno = 0;
+      print(_model.p);
     }
-    return jogada;
+  }
+
+  void Error(String msg) {
+    final snackBar = SnackBar(
+      content: Text(msg),
+      duration: const Duration(seconds: 4),
+      margin: const EdgeInsets.only(bottom: 20),
+    );
   }
 }

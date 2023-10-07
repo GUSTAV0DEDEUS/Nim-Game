@@ -63,7 +63,7 @@ class _GameSetupState extends State<GameSetup> {
                     'Escolha a quantidade de pecas do jogo',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontFamily: "Dogica PIxel",
+                      fontFamily: "Dogica Pixel",
                       fontSize: 20,
                       fontWeight: FontWeight.w700,
                     ),
@@ -72,28 +72,26 @@ class _GameSetupState extends State<GameSetup> {
                   SizedBox(
                     height: 80,
                     width: MediaQuery.of(context).size.width * .9,
-                    child: ListView(
+                    child: ListView.separated(
+                      itemCount: _fibonacciNumbers.length,
                       scrollDirection: Axis.horizontal,
                       shrinkWrap: true,
-                      children: _fibonacciNumbers
-                          .where((number) => number < 200)
-                          .map(
-                            (number) => Column(
+                      itemBuilder: (context, index) =>Column(
                               children: [
-                                _buildFibonacciRadio(number),
-                                Text("$number")
+                                _buildFibonacciRadio(_fibonacciNumbers[index]),
+                                Text("${_fibonacciNumbers[index]}")
                               ],
-                            ),
-                          )
-                          .toList(),
+                            ), 
+                      separatorBuilder: (context, index) => const SizedBox( width: 10) 
                     ),
+                   
                   ),
                   const SizedBox(height: 20),
                   const Text(
                     'Escolha um número de 1 a 8:',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontFamily: "Dogica PIxel",
+                      fontFamily: "Dogica Pixel",
                       fontSize: 20,
                       fontWeight: FontWeight.w700,
                     ),
@@ -102,7 +100,7 @@ class _GameSetupState extends State<GameSetup> {
                   SizedBox(
                     height: 80,
                     width: MediaQuery.of(context).size.width * .9,
-                    child: ListView.builder(
+                    child: ListView.separated(
                       itemCount: 9,
                       scrollDirection: Axis.horizontal,
                       shrinkWrap: true,
@@ -114,6 +112,8 @@ class _GameSetupState extends State<GameSetup> {
                               ],
                             )
                           : const SizedBox.shrink(),
+                      separatorBuilder: (context, index) => index > 0
+                          ? SizedBox( width: 10) : SizedBox.shrink()
                     ),
                   ),
                 ],
@@ -157,7 +157,7 @@ class _GameSetupState extends State<GameSetup> {
                     'Enviar',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontFamily: "Dogica PIxel",
+                      fontFamily: "Dogica Pixel",
                       fontSize: 26,
                       fontWeight: FontWeight.w700,
                       color: Colors.white,
