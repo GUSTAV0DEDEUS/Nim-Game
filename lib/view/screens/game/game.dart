@@ -5,7 +5,7 @@ class Game extends StatefulWidget {
   final int p;
   final int pMax;
 
-  const Game({super.key, required this.p, required this.pMax});
+  const Game({Key? key, required this.p, required this.pMax}) : super(key: key);
 
   @override
   State<Game> createState() => _GameState();
@@ -15,22 +15,6 @@ class _GameState extends State<Game> {
   late NimGameController _gameController;
   late List<int> _gridItems;
   int _selectedNumber = 0;
-  String _selectedNumberKing = "";
-  final bool _shouldDelayRendering = true;
-
-  Widget _buildNumberRadio(int number) {
-    return Radio<int>(
-      value: number,
-      groupValue: _selectedNumber,
-      onChanged: (value) {
-        if (value! <= _gameController.valueP) {
-          setState(() {
-            _selectedNumber = value;
-          });
-        }
-      },
-    );
-  }
 
   @override
   void initState() {
@@ -42,26 +26,57 @@ class _GameState extends State<Game> {
   }
 
   void _removeItem(int value) {
-    if (_gridItems.length < value) {
-      int result = _gameController.winnerController();
-      if (result == 1) {
-        print("GG");
+    try {
+      if (_gameController.isTurnUser) {
+        _gameController.realizarJogada(value);
+        setState(() {
+          _gridItems.removeRange(0, value);
+          _selectedNumber = 0;
+        });
       } else {
-        print("perdeu");
+        int algo = _gameController.jogadaComputador();
+        print(algo);
+        setState(() {
+          _selectedNumber = 0;
+          _gridItems.removeRange(0, algo);
+        });
       }
+    } catch (e) {
+      print(e);
     }
-    if (_gameController.isTurnUser) {
-      _gameController.usuarioEscolheJogada(value);
-      setState(() {
-        _gridItems.removeRange(0, value);
-      });
-    } else {
-      int computerMove = _gameController.jogadaComputador();
-      setState(() {
-        _selectedNumberKing = computerMove.toString();
-        _gridItems.removeRange(0, computerMove);
-      });
+  }
+
+  Widget _buildNumberRadio(int number) {
+    return Radio<int>(
+      value: number,
+      groupValue: _selectedNumber,
+      onChanged: _gameController.isTurnUser
+          ? (value) {
+              setState(() {
+                _selectedNumber = value!;
+              });
+            }
+          : null,
+    );
+  }
+
+  List<Widget> _buildNumberRadioButtons() {
+    int maxButtons = _gameController.valueP < widget.pMax
+        ? _gameController.valueP
+        : widget.pMax;
+    List<Widget> radioButtons = [];
+
+    for (int i = 1; i <= maxButtons; i++) {
+      radioButtons.add(
+        Column(
+          children: [
+            _buildNumberRadio(i),
+            Text("$i"),
+          ],
+        ),
+      );
     }
+    return radioButtons;
   }
 
   @override
@@ -84,7 +99,7 @@ class _GameState extends State<Game> {
             Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Text(_gameController.turno == 0 ? "King" : "Voce"),
+                Text(_gameController.isTurnComputer ? "King" : "Você"),
                 const SizedBox(height: 20),
                 SizedBox(
                   height: 285,
@@ -126,57 +141,75 @@ class _GameState extends State<Game> {
                         child: ListView.separated(
                           shrinkWrap: true,
                           scrollDirection: Axis.horizontal,
+                          itemCount: _buildNumberRadioButtons().length,
                           itemBuilder: (ctx, index) =>
-                              index > 0 && index <= _gameController.valueP
-                                  ? Column(
-                                      children: [
-                                        _buildNumberRadio(index),
-                                        Text("$index")
-                                      ],
-                                    )
-                                  : const SizedBox.shrink(),
-                          separatorBuilder: (ctx, index) => index > 0
-                              ? const SizedBox(width: 10)
-                              : const SizedBox.shrink(),
-                          itemCount: widget.pMax + 1,
+                              _buildNumberRadioButtons()[index],
+                          separatorBuilder: (ctx, index) =>
+                              const SizedBox(width: 10),
                         ),
                       ),
                     ],
                   ),
                 ),
-                Visibility(
-                  visible: _gameController.isTurnComputer,
-                  child: Text(
-                    "Valor retirado pelo rei: ${_selectedNumberKing}",
-                  ),
-                ),
                 const SizedBox(height: 20),
-                TextButton(
-                  style: ButtonStyle(
-                    foregroundColor:
-                        const MaterialStatePropertyAll(Colors.white),
-                    padding: const MaterialStatePropertyAll(
-                      EdgeInsets.symmetric(vertical: 20),
-                    ),
-                    backgroundColor: _gameController.isTurnComputer
-                        ? const MaterialStatePropertyAll(Colors.red)
-                        : const MaterialStatePropertyAll(Colors.blue),
-                  ),
-                  onPressed: () => _removeItem(_selectedNumber),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        _gameController.isTurnComputer ? "Oponente" : "Retirar",
-                        style: const TextStyle(fontSize: 26),
-                      ),
-                    ],
-                  ),
+                Button(
+                  isUserTurn: _gameController.isTurnUser,
+                  selectedNumber: _selectedNumber,
+                  onButtonPressed: _removeItem,
+                  valueP: _gameController.valueP,
                 ),
               ],
             )
           ],
         ),
+      ),
+    );
+  }
+}
+
+class Button extends StatelessWidget {
+  final bool isUserTurn;
+  final int selectedNumber;
+  final int valueP;
+  final Function(int) onButtonPressed;
+  late bool isEnabled = selectedNumber <= valueP;
+  Button(
+      {Key? key,
+      required this.isUserTurn,
+      required this.selectedNumber,
+      required this.onButtonPressed,
+      required this.valueP})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    if (isUserTurn && isEnabled) {
+      return buttonTheme(Colors.blue, "Retirar", false);
+    } else if ((!isUserTurn) && isEnabled) {
+      return buttonTheme(Colors.red, "Oponente", false);
+    } else {
+      return buttonTheme(Colors.black, "Escolha outro valor", true);
+    }
+  }
+
+  TextButton buttonTheme(Color background, String text, bool enabled) {
+    return TextButton(
+      style: ButtonStyle(
+        foregroundColor: MaterialStateProperty.all(Colors.white),
+        padding: MaterialStateProperty.all(
+          const EdgeInsets.symmetric(vertical: 20),
+        ),
+        backgroundColor: MaterialStateProperty.all(background),
+      ),
+      onPressed: () => enabled ? null : onButtonPressed(selectedNumber),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            text,
+            style: const TextStyle(fontSize: 26),
+          ),
+        ],
       ),
     );
   }

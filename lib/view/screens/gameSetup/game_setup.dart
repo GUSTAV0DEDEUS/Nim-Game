@@ -73,18 +73,17 @@ class _GameSetupState extends State<GameSetup> {
                     height: 80,
                     width: MediaQuery.of(context).size.width * .9,
                     child: ListView.separated(
-                      itemCount: _fibonacciNumbers.length,
-                      scrollDirection: Axis.horizontal,
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) =>Column(
+                        itemCount: _fibonacciNumbers.length,
+                        scrollDirection: Axis.horizontal,
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) => Column(
                               children: [
                                 _buildFibonacciRadio(_fibonacciNumbers[index]),
                                 Text("${_fibonacciNumbers[index]}")
                               ],
-                            ), 
-                      separatorBuilder: (context, index) => const SizedBox( width: 10) 
-                    ),
-                   
+                            ),
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(width: 10)),
                   ),
                   const SizedBox(height: 20),
                   const Text(
@@ -101,20 +100,20 @@ class _GameSetupState extends State<GameSetup> {
                     height: 80,
                     width: MediaQuery.of(context).size.width * .9,
                     child: ListView.separated(
-                      itemCount: 9,
-                      scrollDirection: Axis.horizontal,
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) => index > 0
-                          ? Column(
-                              children: [
-                                _buildNumberRadio(index),
-                                Text("$index")
-                              ],
-                            )
-                          : const SizedBox.shrink(),
-                      separatorBuilder: (context, index) => index > 0
-                          ? SizedBox( width: 10) : SizedBox.shrink()
-                    ),
+                        itemCount: 9,
+                        scrollDirection: Axis.horizontal,
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) => index > 0
+                            ? Column(
+                                children: [
+                                  _buildNumberRadio(index),
+                                  Text("$index")
+                                ],
+                              )
+                            : const SizedBox.shrink(),
+                        separatorBuilder: (context, index) => index > 0
+                            ? SizedBox(width: 10)
+                            : SizedBox.shrink()),
                   ),
                 ],
               ),

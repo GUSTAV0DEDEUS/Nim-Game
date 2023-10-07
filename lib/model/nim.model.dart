@@ -4,15 +4,9 @@ class NimGameModel {
   late int turno;
 
   void partida() {
-    if (p % (pMax + 1) == 0 && pMax == 1) {
+    if ((p % (pMax + 1) == 0 && pMax == 1) || ((pMax + 1) == p)) {
       print('Computador Começa');
       turno = 0;
-    } else if ((pMax + 1) == p) {
-      print('Computador Começa');
-      turno = 0;
-    } else if (p % (pMax + 1) == 0) {
-      print('Você Começa');
-      turno = 1;
     } else {
       print('Você começa');
       turno = 1;

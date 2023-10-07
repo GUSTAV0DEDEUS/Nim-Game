@@ -19,9 +19,9 @@ class NimGameController {
   int winnerController() {
     if (_model.p == 0) {
       return _model.getWinner();
-    } else {
-      throw ("Ainda tem pecas");
     }
+    print(_model.p);
+    throw ("Ainda tem pecas");
   }
 
   void realizarJogada(int quantidade) {
@@ -39,7 +39,7 @@ class NimGameController {
     if (isTurnComputer) {
       int jogada = computadorEscolheJogada(_model.p, _model.pMax);
       _model.p -= jogada;
-      print('O computador retirou $jogada peças.');
+      print('O computador retirou $jogada peças. ${_model.p}');
       turno = 1;
     }
     return computadorEscolheJogada(_model.p, _model.pMax);
